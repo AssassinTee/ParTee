@@ -1,10 +1,10 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include "dm.h"
+#include "partee.h"
 
 
-CGameControllerDM::CGameControllerDM(CGameContext *pGameServer)
+CGameControllerPartee::CGameControllerPartee(CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
-	m_pGameType = "DM";
+	m_pGameType = "Partee";
 }
