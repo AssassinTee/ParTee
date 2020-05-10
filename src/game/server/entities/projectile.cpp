@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
+#include <game/server/gamecontroller.h>
 
 #include "character.h"
 #include "projectile.h"
@@ -67,6 +68,10 @@ vec2 CProjectile::GetPos(float Time)
 
 void CProjectile::Tick()
 {
+	//API CALL
+	if(GameServer()->m_pController)
+		GameServer()->m_pController->GetMiniGame()->ProjectileTick(this);
+	
 	float Pt = (Server()->Tick()-m_StartTick-1)/(float)Server()->TickSpeed();
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	vec2 PrevPos = GetPos(Pt);
