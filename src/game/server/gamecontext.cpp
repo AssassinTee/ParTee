@@ -186,6 +186,8 @@ void CGameContext::CreateSound(vec2 Pos, int Sound, int64 Mask)
 
 void CGameContext::SendChat(int ChatterClientID, int Mode, int To, const char *pText)
 {
+	m_pController->GetMiniGame()->OnSendChat(ChatterClientID, Mode, To, pText);
+	
 	char aBuf[256];
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 	{
@@ -506,6 +508,8 @@ void CGameContext::OnTick()
 
 	//if(world.paused) // make sure that the game object always updates
 	m_pController->Tick();
+	
+	m_pController->GetMiniGame()->Tick();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
