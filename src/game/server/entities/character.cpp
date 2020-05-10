@@ -217,6 +217,8 @@ void CCharacter::HandleWeaponSwitch()
 	// select Weapon
 	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
 	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
+	GameServer()->m_pController->GetMiniGame()->OnWeaponSwitch(this, Prev, Next);
+	
 
 	if(Next < 128) // make sure we only try sane stuff
 	{
@@ -285,6 +287,8 @@ void CCharacter::FireWeapon()
 		}
 		return;
 	}
+	
+	GameServer()->m_pController->GetMiniGame()->OnFireWeapon(this, m_ActiveWeapon, FullAuto);
 
 	vec2 ProjStartPos = m_Pos+Direction*GetProximityRadius()*0.75f;
 
@@ -508,6 +512,22 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	// it is not allowed to aim in the center
 	if(m_LatestInput.m_TargetX == 0 && m_LatestInput.m_TargetY == 0)
 		m_LatestInput.m_TargetY = -1;
+	
+	////API CALLS
+	GameServer()->m_pController->GetMiniGame()->OnCrosshair(this, m_LatestInput.m_TargetX, m_LatestInput.m_TargetY);
+	
+	if((m_LatestInput.m_Fire&1) && (m_LatestPrevInput.m_Fire&1) == 0)
+		GameServer()->m_pController->GetMiniGame()->OnLeftClick(this);
+	else if((m_LatestInput.m_Fire&1) && (m_LatestPrevInput.m_Fire&1))
+		GameServer()->m_pController->GetMiniGame()->OnHoldLeftClick(this);
+	
+	if(m_LatestInput.m_Jump)
+		GameServer()->m_pController->GetMiniGame()->OnJump(this);
+	
+	if(m_LatestInput.m_Hook)
+		GameServer()->m_pController->GetMiniGame()->OnHook(this);
+	
+	GameServer()->m_pController->GetMiniGame()->OnMovement(this, m_LatestInput.m_Direction);
 
 	if(m_NumInputs > 2 && m_pPlayer->GetTeam() != TEAM_SPECTATORS)
 	{
@@ -534,11 +554,15 @@ void CCharacter::Tick()
 {
 	m_Core.m_Input = m_Input;
 	m_Core.Tick(true);
+	
+	//API CALL
+	GameServer()->m_pController->GetMiniGame()->OnCharacterTick(this);
+	
 
 	// handle leaving gamelayer
 	if(GameLayerClipped(m_Pos))
 	{
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+		GameServer()->m_pController->GetMiniGame()->Die(this, m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 
 	// handle Weapons
@@ -605,7 +629,8 @@ void CCharacter::TickDefered()
 	else if(m_Core.m_Death)
 	{
 		// handle death-tiles
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+		GameServer()->m_pController->GetMiniGame()->Die(this, m_pPlayer->GetCID(), WEAPON_WORLD);
+		//Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 
 	// update the m_SendCore if needed
@@ -642,17 +667,19 @@ void CCharacter::TickPaused()
 
 bool CCharacter::IncreaseHealth(int Amount)
 {
-	if(m_Health >= 10)
+	int MaxHealth = GameServer()->m_pController->GetMiniGame()->GetMaxHealth();
+	if(m_Health >= MaxHealth)
 		return false;
-	m_Health = clamp(m_Health+Amount, 0, 10);
+	m_Health = clamp(m_Health+Amount, 0, MaxHealth);
 	return true;
 }
 
 bool CCharacter::IncreaseArmor(int Amount)
 {
-	if(m_Armor >= 10)
+	int MaxArmor = GameServer()->m_pController->GetMiniGame()->GetMaxArmor();
+	if(m_Armor >= MaxArmor)
 		return false;
-	m_Armor = clamp(m_Armor+Amount, 0, 10);
+	m_Armor = clamp(m_Armor+Amount, 0, MaxArmor);
 	return true;
 }
 
@@ -776,7 +803,7 @@ bool CCharacter::TakeDamage(vec2 Force, vec2 Source, int Dmg, int From, int Weap
 	// check for death
 	if(m_Health <= 0)
 	{
-		Die(From, Weapon);
+		GameServer()->m_pController->GetMiniGame()->Die(this, From, Weapon);
 
 		// set attacker's face to happy (taunt!)
 		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])

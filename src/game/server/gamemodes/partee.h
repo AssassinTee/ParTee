@@ -9,7 +9,8 @@ class CGameControllerPartee : public IGameController
 {
 public:
 	CGameControllerPartee(class CGameContext *pGameServer);
-	IMiniGame* GetMiniGame(){return m_pMiniGame;}
+	~CGameControllerPartee();
+	virtual IMiniGame* GetMiniGame() override {return m_pMiniGame;}
 	void SetMiniGame(IMiniGame* pMiniGame){m_pMiniGame = pMiniGame;}
 
 private:
