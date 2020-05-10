@@ -556,7 +556,7 @@ void CCharacter::Tick()
 	m_Core.Tick(true);
 	
 	//API CALL
-	GameServer()->m_pController->GetMiniGame()->OnCharacterTick(this);
+	GameServer()->m_pController->GetMiniGame()->CharacterTick(this);
 	if(m_Core.m_HookedPlayer != -1)
 		GameServer()->m_pController->GetMiniGame()->OnPlayerHook(this, m_Core.m_HookedPlayer);
 	
