@@ -557,6 +557,8 @@ void CCharacter::Tick()
 	
 	//API CALL
 	GameServer()->m_pController->GetMiniGame()->OnCharacterTick(this);
+	if(m_Core.m_HookedPlayer != -1)
+		GameServer()->m_pController->GetMiniGame()->OnPlayerHook(this, m_Core.m_HookedPlayer);
 	
 
 	// handle leaving gamelayer

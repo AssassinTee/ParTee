@@ -23,6 +23,7 @@ public:
 	virtual void OnMovement(CCharacter* pCharacter, int Direction){}
 	virtual void OnJump(CCharacter* pCharacter){}
 	virtual void OnCharacterTick(CCharacter* pCharacter){}
+	virtual void OnPlayerHook(CCharacter* pCharacter, int HookedPlayerID){}
 	
 	virtual int GetMaxHealth(){return 10;}
 	virtual int GetMaxArmor(){return 10;}
