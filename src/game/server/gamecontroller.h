@@ -7,6 +7,7 @@
 #include <base/tl/array.h>
 
 #include <game/commands.h>
+#include <game/server/minigames/minigame.h>
 
 #include <generated/protocol.h>
 
@@ -164,6 +165,14 @@ public:
 			bool?
 	*/
 	virtual bool OnEntity(int Index, vec2 Pos);
+	
+	/*
+		Function: get_minigame
+			Called a lot of times for minigame api
+		Returns: 
+			Minigame interface pointer
+	*/
+	virtual IMiniGame* GetMiniGame()=0;
 
 	void OnPlayerConnect(class CPlayer *pPlayer);
 	void OnPlayerDisconnect(class CPlayer *pPlayer);
