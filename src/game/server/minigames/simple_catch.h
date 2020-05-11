@@ -10,6 +10,7 @@ public:
 	bool IsTeam() override {return false;}
 	bool GameEnd() override;
 	void DoScoring() override;
+	const char* GetName() override {return "HookCatch";}
 	//virtual void Tune(){};
 };
 

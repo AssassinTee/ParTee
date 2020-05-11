@@ -13,6 +13,7 @@ public:
 	virtual bool IsTeam()=0;
 	virtual bool GameEnd()=0;
 	virtual void DoScoring()=0;
+	virtual const char* GetName()=0;
 	
 	//Character interface
 	virtual void CharacterTick(CCharacter* pCharacter){}
