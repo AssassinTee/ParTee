@@ -4,6 +4,12 @@
 #define GAME_SERVER_GAMEMODES_PARTEE_H
 #include <game/server/gamecontroller.h>
 #include <game/server/minigames/minigame.h>
+#include <game/server/minigames/deathmatch.h>
+
+template<typename T>
+IMiniGame* CreateGame(class CGameContext* pGameServer) {return new T(pGameServer);}
+		
+typedef IMiniGame* (*RandomMiniGame)(class CGameContext* pGameServer);
 
 class CGameControllerPartee : public IGameController
 {
@@ -14,7 +20,21 @@ public:
 	void SetMiniGame(IMiniGame* pMiniGame){m_pMiniGame = pMiniGame;}
 
 private:
+	
     IMiniGame* m_pMiniGame;
 };
+
+namespace MiniGame
+{
+	const RandomMiniGame MiniGames[] =
+	{
+		&CreateGame<CDeathMatch>
+	};
+	const size_t numGames = 1;
+	inline IMiniGame* CreateMiniGame(class CGameContext* pGameServer)
+	{
+		return MiniGames[random_int()%numGames](pGameServer);
+	}
+}
 
 #endif
