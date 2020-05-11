@@ -20,8 +20,12 @@ public:
 	void SetMiniGame(IMiniGame* pMiniGame){m_pMiniGame = pMiniGame;}
 
 private:
-	
+	void ChooseMiniGame();
+
+	class CGameContext *m_pGameServer;
     IMiniGame* m_pMiniGame;
+	int m_MiniGameID;
+	int m_PrevMiniGameID;
 };
 
 namespace MiniGame
@@ -31,9 +35,9 @@ namespace MiniGame
 		&CreateGame<CDeathMatch>
 	};
 	const size_t numGames = 1;
-	inline IMiniGame* CreateMiniGame(class CGameContext* pGameServer)
+	inline IMiniGame* CreateMiniGame(class CGameContext* pGameServer, int GameID)
 	{
-		return MiniGames[random_int()%numGames](pGameServer);
+		return MiniGames[GameID](pGameServer);
 	}
 }
 
